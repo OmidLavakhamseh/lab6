@@ -1,0 +1,102 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# Introduction
+The knapsack problem is a discrete optimization problem where we have a knapsack that can take a limited weight W and we want to fill this knapsack with a number of items i = 1; :::; n, each with a weight wi and a value vi. The goal is to find the knapsack with the largest value of the elements added to the knapsack.This problem is NP-hard, meaning that it is "at least as hard as the hardest problem in NP"
+(https://en.wikipedia.org/wiki/NP-hardness). NP is a (fundamental) class of problems for which there are (currently) no polynomial time algorithms to solve them.
+
+```{r setup}
+library(lab6pack)
+```
+# Package Solutions
+## 1.1.1 Brute force search
+The only solution that is guaranteed to give a correct answer in all situations for the knapsack problem is using brute-force search, i.e. going through all possible alternatives and return the maximum value
+found. This approach is of complexity O(2n) since all possible combinations 2n needs to be evaluated. The easiest way to enumerate all different combinations is using a binary representation of the numbers 1 to 2n and include all elements of that is equal to 1 in the binary representation. A function that can do this for you in R is intToBits(). 
+
+```{r, eval=F}
+# Function to get time
+set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
+n <-16
+knapsack_objects <-
+  data.frame(
+    w=sample(1:4000, size = n, replace = TRUE),
+    v=runif(n = n, 0, 10000)
+  )
+get_time <- function(i){
+  time <- system.time(expr = brute_force_knapsack(x = knapsack_objects[1:16,], W=i))[3]
+  return(time)}
+# Function to get mean execution time
+mean(unlist(lapply(c(10,100,500,1000,1500,2000,3000,4000), FUN = get_time)))
+```
+
+- **Question:** How much time does it takes to run the algorithm for n = 16 objects? 
+  - Average Code Execution Time: **1.525 seconds**
+  
+## 1.1.2 Dynamic Programming
+We will now take another approach to the problem. If the weights are actually discrete values (as in our example) we can use this to create an algorithm that can solve the knapsack problem exact by iterating
+over all possible values of w. This function should return the same results as the brute force algorithm, but unlike the brute force it should scale much better since the algorithm will run in O(Wn).
+
+```{r, eval=F}
+# Data Object
+set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
+n <-500
+knapsack_objects <-
+  data.frame(
+    w=sample(1:4000, size = n, replace = TRUE),
+    v=runif(n = n, 0, 10000)
+  )
+
+
+# Function to get time
+get_time <- function(i){
+  time <- system.time(expr = knapsack_dynamic(x = knapsack_objects[1:500,], W=i))[3]
+  return(time)}
+# Function to get mean execution time
+mean(unlist(lapply(c(100,500,1000,1500,2000,3000,4000,5000), FUN = get_time)))
+```
+
+- **Question:** How much time does it takes to run the algorithm for n = 500 objects?
+  - Average Code Execution Time: **1.9375 seconds**
+
+## 1.1.3 Greedy Heuristics
+A last approach is to use the a heuristic or approximation for the problem. This algorithm will not give an exact result (but it can be shown that it will return at least 50% of the true maximum value),
+but it will reduce the computational complexity considerably (actually to O(n log n) due to the sorting part of the algorithm). A short description on how to implement the greedy approach can be found
+here https://en.wikipedia.org/wiki/Knapsack_problem#Greedy_approximation_algorithm. Below is an example on how the function should work.
+```{r, eval=F}
+# Data Object
+set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
+n <-1000000
+knapsack_objects <-
+  data.frame(
+    w=sample(1:4000, size = n, replace = TRUE),
+    v=runif(n = n, 0, 10000)
+  )
+
+# Function to get time
+get_time <- function(i){
+  time <- system.time(expr = greedy_knapsack(x = knapsack_objects[1:1000000,], W=i))[3]
+  return(time)}
+
+# Function to get mean execution time
+mean(unlist(lapply(c(1000,2500,5000,10000,15000,20000), FUN = get_time)))
+```
+
+- **Question:** How much time does it takes to run the algorithm for n = 1000000 objects?
+  - Average Code Execution Time: **0.255 seconds**
+  
+
+# References
+1. [Knapsack Problem - Wikipedia](https://en.wikipedia.org/wiki/Knapsack_problem)
+2. [Dynamic programming - Wikipedia](https://en.wikipedia.org/wiki/Knapsack_problem#0.2F1_knapsack_problem)
+3. [Greedy heuristic - Wikipedia](https://en.wikipedia.org/wiki/Knapsack_problem#Greedy_approximation_algorithm)
