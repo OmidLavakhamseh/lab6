@@ -7,23 +7,18 @@
 #' @source  https://en.wikipedia.org/wiki/Knapsack_problem#Greedy_approximation_algorithm
 #' @export 
 
-greedy_knapsack <- function(x, W){
+greedy_knapsack2 <- function(x, W){
   i=1
   c1=c()
   c=c()
-  if (is.data.frame(x) == FALSE & is.numeric(W) == FALSE){
-    stop()
-  }
-  if(W<=0){
-    stop()
-  }
-  v= 0
-  v1 = 0
+  stopifnot(inherits(x,'data.frame'))
+  stopifnot(W>0)
+  
+  v=v1 = vd=vd1 = 0
   vrat = x$v/x$w
   numrow<- nrow(x) 
   x$OI= 1:numrow
-  vd=0
-  vd1 = 0
+
   x=x[order(vrat, decreasing=TRUE),]
   while((v1<W)|(v1==W)){
     v=v1
@@ -34,12 +29,12 @@ greedy_knapsack <- function(x, W){
     c1=c(c1,i)
     i=i+1
   }
-
+  
   greedylist=list(value=round(vd),elements=x$OI[c])
-
-
+  
+  
   return(greedylist)
-
+  
 }
 
 

@@ -45,3 +45,4 @@ brute_force_knapsack <- function(x, W){
   
   return(list(value = round(max_value),elements = element))
 }
+
