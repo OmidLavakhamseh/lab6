@@ -12,4 +12,4 @@ x <-
 W <- 2000
 
 profvis::profvis({brute_force_knapsack(x, W)})
-profvis::profvis({brute_force_knapsack_parallel(x, W)})
+
